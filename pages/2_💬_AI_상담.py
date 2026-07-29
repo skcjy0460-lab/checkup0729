@@ -14,8 +14,9 @@ st.caption(
 
 if not gh.is_ai_available():
     st.warning(
-        "Gemini API 키가 설정되어 있지 않아 AI 상담 기능을 사용할 수 없습니다. "
-        "`.streamlit/secrets.toml`에 `GEMINI_API_KEY`를 등록한 뒤 다시 시도해주세요.\n\n"
+        f"AI 상담 기능을 사용할 수 없습니다: {gh.ai_status()}\n\n"
+        "Streamlit Cloud라면 앱 설정(Settings) → Secrets에 키를 등록한 뒤, "
+        "**Manage app → Reboot app**으로 완전히 재시작해야 반영되는 경우가 있습니다.\n\n"
         "대신 **🔍 검진기관 찾기** 페이지에서 체크박스로 직접 검색하실 수 있습니다.",
         icon="⚠️",
     )

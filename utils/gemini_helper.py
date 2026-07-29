@@ -43,15 +43,34 @@ def _get_api_key() -> Optional[str]:
 
 
 @st.cache_resource(show_spinner=False)
+def _build_client(api_key: str):
+    """api_key 값 자체를 캐시 키로 사용한다.
+    이렇게 해야 '키가 없던 시점'의 결과가 캐시로 굳어버리지 않고,
+    나중에 Streamlit Cloud 시크릿에 키를 추가하면 바로 새로 인식된다."""
+    return genai.Client(api_key=api_key)
+
+
 def _get_client():
     api_key = _get_api_key()
     if not api_key or genai is None:
-        return None
-    return genai.Client(api_key=api_key)
+        return None  # 이 None은 캐시되지 않으므로 다음 호출 때 다시 확인한다
+    return _build_client(api_key)
 
 
 def is_ai_available() -> bool:
     return _get_client() is not None
+
+
+def ai_status() -> str:
+    """AI 사용 불가 시 원인을 구분해서 보여주기 위한 진단 함수."""
+    if genai is None:
+        return "라이브러리 미설치: requirements.txt에 google-genai가 설치되지 않았습니다."
+    api_key = _get_api_key()
+    if not api_key:
+        return "API 키 없음: .streamlit/secrets.toml (또는 Streamlit Cloud Secrets)에 GEMINI_API_KEY가 없습니다."
+    if _get_client() is None:
+        return "클라이언트 생성 실패: API 키 형식을 다시 확인해주세요."
+    return "정상"
 
 
 # ---------------------------------------------------------------------------

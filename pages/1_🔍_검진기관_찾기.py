@@ -100,8 +100,8 @@ if search_clicked or "last_results" in st.session_state:
         if ai_clicked:
             if not gh.is_ai_available():
                 st.error(
-                    "Gemini API 키가 설정되어 있지 않습니다. `.streamlit/secrets.toml`에 "
-                    "`GEMINI_API_KEY`를 등록해주세요. (API 키 없이도 아래 목록/엑셀 다운로드는 정상 이용 가능합니다)"
+                    f"AI 추천을 사용할 수 없습니다: {gh.ai_status()}\n\n"
+                    "(API 키 없이도 아래 목록/엑셀 다운로드는 정상 이용 가능합니다)"
                 )
             else:
                 with st.spinner("AI가 후보 기관들을 분석해 추천 코멘트를 작성하는 중입니다..."):
