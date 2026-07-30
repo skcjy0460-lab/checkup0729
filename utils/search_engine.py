@@ -136,36 +136,3 @@ def build_map_search_url(name: str, address: str) -> str:
 def build_kakao_map_url(name: str, address: str) -> str:
     q = urllib.parse.quote(f"{name} {address}")
     return f"https://map.kakao.com/?q={q}"
-
-
-def to_excel_bytes(df: pd.DataFrame) -> bytes:
-    import io
-
-    display_df = df.copy()
-    if "_score" in display_df.columns:
-        display_df = display_df.drop(columns=["_score"])
-    for c in CHECKUP_COLS:
-        if c in display_df.columns:
-            display_df[c] = display_df[c].apply(lambda v: "가능" if v else "")
-    rename_map = {
-        "name": "검진기관명",
-        "address": "주소",
-        "phone": "전화번호",
-        "category": "기관종별",
-        "sido": "시도",
-        "sigungu": "시군구",
-        "available_weekday": "평일검진",
-        "available_holiday": "휴일공휴일검진",
-    }
-    rename_map.update(CHECKUP_LABELS)
-    display_df = display_df.rename(columns=rename_map)
-    drop_cols = [c for c in ["id", "lat", "lng", "postal_code"] if c in display_df.columns]
-    display_df = display_df.drop(columns=drop_cols)
-    for c in ["평일검진", "휴일공휴일검진"]:
-        if c in display_df.columns:
-            display_df[c] = display_df[c].apply(lambda v: "가능" if v else "")
-
-    buf = io.BytesIO()
-    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
-        display_df.to_excel(writer, index=False, sheet_name="검진기관 검색결과")
-    return buf.getvalue()
