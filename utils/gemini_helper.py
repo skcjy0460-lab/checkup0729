@@ -32,7 +32,7 @@ except ImportError:  # pragma: no cover
 
 from utils.db_builder import CHECKUP_LABELS
 
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_NAME = "gemini-3.6-flash"
 
 
 def _get_api_key() -> Optional[str]:
@@ -125,7 +125,6 @@ def parse_user_intent(user_text: str) -> dict:
             model=MODEL_NAME,
             contents=prompt,
             config=genai_types.GenerateContentConfig(
-                temperature=0.2,
                 response_mime_type="application/json",
             ),
         )
@@ -197,7 +196,6 @@ def generate_recommendation_comments(
             model=MODEL_NAME,
             contents=prompt,
             config=genai_types.GenerateContentConfig(
-                temperature=0.4,
                 response_mime_type="application/json",
             ),
         )
@@ -223,7 +221,6 @@ def generate_prep_tips(checkup_labels: List[str]) -> str:
         response = client.models.generate_content(
             model=MODEL_NAME,
             contents=prompt,
-            config=genai_types.GenerateContentConfig(temperature=0.5),
         )
         return response.text.strip()
     except Exception as e:  # noqa: BLE001
