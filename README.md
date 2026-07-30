@@ -6,24 +6,34 @@
 
 ```
 checkup_finder/
-├── app.py                          # 홈: 소개 + 국가검진 대상 자동판별기
-├── pages/
-│   ├── 1_🔍_검진기관_찾기.py         # 조건(지역/검진종류/평일·휴일) 검색 + AI 추천
-│   └── 2_💬_AI_상담.py               # 자연어로 물어보는 AI 챗봇 상담
+├── app.py                          # 진입점(라우터): st.navigation으로 페이지 연결
+├── views/
+│   ├── home.py                      # 홈: 소개 + 국가검진 대상 자동판별기
+│   ├── search.py                    # 조건(지역/검진종류/평일·휴일) 검색 + AI 추천
+│   └── chat.py                      # 자연어로 물어보는 AI 챗봇 상담
 ├── utils/
 │   ├── db_builder.py                # 엑셀 → SQLite 자동 변환 파이프라인
 │   ├── search_engine.py             # 규칙기반 필터링/정렬 (Ground Truth)
 │   ├── eligibility.py               # 국가검진 대상 자동판별 (2026년 기준)
 │   └── gemini_helper.py             # Gemini API 연동 (추천/자연어 파싱)
 ├── data/
-│   ├── 검진기관병원급_자체DB_평일기준__업로드양식.xlsx
-│   ├── 검진기관_자체DB_휴일_및_공휴일__업로드양식.xlsx
+│   ├── checkup_db_weekday.xlsx      # 원본: 검진기관병원급_자체DB_평일기준
+│   ├── checkup_db_holiday.xlsx      # 원본: 검진기관_자체DB_휴일_및_공휴일
 │   └── checkup_institutions.db      # 자동 생성됨 (최초 실행 시)
 ├── .streamlit/
 │   └── secrets.toml.example         # 이 파일을 secrets.toml로 복사 후 키 입력
 ├── requirements.txt
 └── .gitignore
 ```
+
+> ℹ️ **왜 pages/ 폴더 대신 views/ + st.navigation 구조인가요?**
+> 원래는 Streamlit 기본 멀티페이지 방식인 `pages/1_🔍_검진기관_찾기.py`처럼 파일명에
+> 이모지·한글을 넣는 방식으로 만들었는데, Windows 탐색기의 기본 압축 해제 프로그램이
+> zip 안의 이런 파일명을 깨진 문자로 잘못 해석해서 파일이 통째로 안 보이는 문제가
+> 발생했습니다. 그래서 모든 실제 파일명은 ASCII로 유지하고, 사이드바에 표시되는
+> 한글 제목/이모지 아이콘은 `app.py`의 `st.Page(title="검진기관 찾기", icon="🔍")`처럼
+> 코드 안에서 지정하는 방식으로 바꿨습니다. 조정윤님께서 예전에 겪으신 "한글 파일명
+> Windows 인코딩 깨짐" 문제와 동일한 원인이라 같은 해법을 적용했습니다.
 
 ## 🧩 핵심 설계 원칙
 
@@ -64,8 +74,10 @@ checkup_finder/
   AI 추천 코멘트까지 한 번에 제공합니다.
 - **검진 전 준비사항 AI 안내**: 선택한 검진 항목에 대해 공복 여부, 지참물 등
   실무적인 준비사항을 자동 생성합니다 (의학적 진단/처방은 하지 않도록 제한).
-- **엑셀 다운로드**: 검색 결과를 실무에서 바로 쓸 수 있는 엑셀 파일로 내보낼
-  수 있습니다.
+
+> ℹ️ 검색결과 엑셀 다운로드 기능은 자체DB 유출 방지를 위해 의도적으로 제공하지
+> 않습니다. 화면에서 조회만 가능하며, 원본 데이터를 파일로 내보낼 수 있는
+> 경로는 없습니다.
 
 ## 🚀 로컬 실행 방법
 
@@ -73,7 +85,7 @@ checkup_finder/
 cd checkup_finder
 pip install -r requirements.txt
 
-# Gemini API 키 설정 (AI 기능을 쓰려면 필수, 없어도 DB 검색/엑셀 다운로드는 정상 동작)
+# Gemini API 키 설정 (AI 기능을 쓰려면 필수, 없어도 DB 검색은 정상 동작)
 cp .streamlit/secrets.toml.example .streamlit/secrets.toml
 # secrets.toml 파일을 열어 GEMINI_API_KEY 값을 실제 키로 교체
 
@@ -96,7 +108,11 @@ streamlit run app.py
 
 ## 🔑 Gemini API 키 발급
 
-무료 티어로 사용 가능한 `gemini-2.5-flash` 모델을 사용합니다.
+무료 티어로 사용 가능한 `gemini-3.6-flash` 모델을 사용합니다. (2026년 7월 기준 최신 모델이며,
+이전 세대인 `gemini-2.5-flash`는 신규 사용자에게 더 이상 제공되지 않아 404 오류가 발생합니다.
+Google이 모델을 계속 교체/폐기하므로, 추후 다시 오류가 나면 `utils/gemini_helper.py`의
+`MODEL_NAME`을 [Gemini API 모델 목록](https://ai.google.dev/gemini-api/docs/models)에서
+최신 모델명으로 교체하면 됩니다.)
 [Google AI Studio](https://aistudio.google.com/apikey)에서 무료로 API 키를 발급받을
 수 있습니다.
 
