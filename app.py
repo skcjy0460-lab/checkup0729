@@ -89,7 +89,7 @@ with col3:
     st.markdown("</div>", unsafe_allow_html=True)
 with col4:
     st.markdown('<div class="metric-card">', unsafe_allow_html=True)
-    st.metric("AI 추천 엔진", "Gemini 2.5 Flash")
+    st.metric("AI 추천 엔진", "Gemini 3.6 Flash")
     st.markdown("</div>", unsafe_allow_html=True)
 
 st.write("")
