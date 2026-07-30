@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import streamlit as st
 
-from utils import search_engine as se
-from utils import gemini_helper as gh
-from utils.db_builder import CHECKUP_LABELS
+from app_lib import search_engine as se
+from app_lib import gemini_helper as gh
+from app_lib.db_builder import CHECKUP_LABELS
 
 st.title("🔍 조건별 검진기관 찾기")
 st.caption("지역과 원하는 검진종류를 선택하면 자체DB에서 정확히 일치하는 기관을 찾아드리고, AI가 맞춤 추천 코멘트를 더해드립니다.")

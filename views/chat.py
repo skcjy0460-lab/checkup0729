@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import streamlit as st
 
-from utils import search_engine as se
-from utils import gemini_helper as gh
-from utils.db_builder import CHECKUP_LABELS, CHECKUP_COLS
+from app_lib import search_engine as se
+from app_lib import gemini_helper as gh
+from app_lib.db_builder import CHECKUP_LABELS, CHECKUP_COLS
 
 st.title("💬 AI 검진기관 상담")
 st.caption(

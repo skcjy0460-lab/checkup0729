@@ -9,8 +9,8 @@ views/home.py
 
 import streamlit as st
 
-from utils.db_builder import ensure_db, CHECKUP_LABELS
-from utils import eligibility
+from app_lib.db_builder import ensure_db, CHECKUP_LABELS
+from app_lib import eligibility
 
 db_result = ensure_db()
 
